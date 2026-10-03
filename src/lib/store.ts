@@ -22,7 +22,10 @@ function initial(): GameState {
 function load(): GameState {
   try {
     const raw = localStorage.getItem(KEY)
-    if (raw) return { ...initial(), ...JSON.parse(raw) }
+    if (raw) {
+      const saved = JSON.parse(raw) as Partial<GameState>
+      return { ...initial(), ...saved, avatar: { ...DEFAULT_AVATAR, ...saved.avatar } }
+    }
   } catch {
     /* ignore corrupted storage */
   }

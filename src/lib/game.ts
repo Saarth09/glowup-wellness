@@ -1,4 +1,4 @@
-import { ITEMS, type AvatarConfig, type Category, type Item, type Unlock } from '../data/items'
+import { ITEMS, itemsFor, type AvatarConfig, type Body, type Category, type Item, type Unlock } from '../data/items'
 
 export interface Entry {
   id: string
@@ -156,14 +156,14 @@ export function isUnlocked(item: Item, s: Stats): boolean {
   return p.have >= p.need
 }
 
-export function unlockedIds(s: Stats): string[] {
-  return ITEMS.filter((i) => isUnlocked(i, s)).map((i) => i.id)
+export function unlockedIds(s: Stats, body?: Body): string[] {
+  return (body ? itemsFor(body) : ITEMS).filter((i) => isUnlocked(i, s)).map((i) => i.id)
 }
 
 /** The locked item the user is closest to (by fraction complete). */
-export function nextReward(s: Stats): { item: Item; have: number; need: number } | null {
+export function nextReward(s: Stats, body: Body): { item: Item; have: number; need: number } | null {
   let best: { item: Item; have: number; need: number; frac: number } | null = null
-  for (const item of ITEMS) {
+  for (const item of itemsFor(body)) {
     if (!item.unlock || isUnlocked(item, s)) continue
     const p = unlockProgress(item.unlock, s)
     const frac = p.have / p.need

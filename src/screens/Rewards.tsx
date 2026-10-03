@@ -73,7 +73,7 @@ export function Rewards({ result, avatar, onEquip, onDone }: Props) {
             <div className="rw-stat orange">
               <small>Streak</small>
               <b>
-                {after.streak} 🔥
+                {after.streak} day{after.streak === 1 ? '' : 's'}
               </b>
             </div>
           </div>
@@ -115,7 +115,7 @@ export function Rewards({ result, avatar, onEquip, onDone }: Props) {
 
       {panel.kind === 'unlock' && (
         <div className="rw-panel">
-          <div className="rw-tag">🎁 New item unlocked</div>
+          <div className="rw-tag">New item unlocked</div>
           <div className="rw-avatar unlock-glow">
             <Avatar config={{ ...worn, [panel.item.slot]: panel.item.id }} pose="cheer" anim="bounce" />
           </div>
@@ -127,7 +127,7 @@ export function Rewards({ result, avatar, onEquip, onDone }: Props) {
       {panel.kind === 'goodnight' && (
         <div className="rw-panel">
           <Pip mood="sleepy" size={130} />
-          <h1 className="rw-title">Goodnight 🌙</h1>
+          <h1 className="rw-title">Goodnight</h1>
           <p className="rw-sub">That's all for tonight. No next episode, no "you might also like". Phone down, eyes closed.</p>
         </div>
       )}

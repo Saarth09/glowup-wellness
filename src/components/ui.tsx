@@ -167,6 +167,50 @@ export function Sheet({ children, onClose, dark }: { children: ReactNode; onClos
   )
 }
 
+const ICONS = {
+  home: 'M4 11 L12 4 L20 11 V20 H14 V14 H10 V20 H4 Z',
+  closet: 'M12 6 a2 2 0 1 1 2 -2 M12 6 V8 L3 15 Q2 17 4 17 H20 Q22 17 21 15 L12 8',
+  chart: 'M5 20 V12 M12 20 V5 M19 20 V9',
+  user: 'M12 12 a4 4 0 1 0 0 -8 a4 4 0 1 0 0 8 Z M4 21 C4 16 8 14 12 14 C16 14 20 16 20 21',
+  back: 'M15 5 L8 12 L15 19',
+  close: 'M6 6 L18 18 M18 6 L6 18',
+  check: 'M5 12 L10 17 L19 7',
+  arrow: 'M5 12 H19 M13 6 L19 12 L13 18',
+} as const
+
+export function Icon({ name, size = 22 }: { name: keyof typeof ICONS; size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d={ICONS[name]} />
+    </svg>
+  )
+}
+
+export function WeekStrip({ today, active, accent = '#D4F06B' }: { today: string; active: Set<string>; accent?: string }) {
+  const days = Array.from({ length: 7 }, (_, k) => {
+    const d = new Date(today + 'T12:00')
+    d.setDate(d.getDate() - 6 + k)
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+    return { key, num: d.getDate(), name: d.toLocaleDateString(undefined, { weekday: 'short' }) }
+  })
+  return (
+    <div className="week-strip">
+      {days.map((d) => (
+        <div
+          key={d.key}
+          className={`ws-day ${active.has(d.key) ? 'on' : ''} ${d.key === today ? 'today' : ''}`}
+          style={active.has(d.key) ? { background: accent } : undefined}
+        >
+          <b>{d.num}</b>
+          <small>{d.name}</small>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+export const PALETTE = ['#EDEB5E', '#5DCB7E', '#F2894A', '#8F93F5', '#F2A3CB', '#EC5B5B', '#A9C9F2', '#D4F06B']
+
 export function fmtMin(m: number) {
   if (m < 60) return `${Math.round(m)} min`
   const h = Math.floor(m / 60)

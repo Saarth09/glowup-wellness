@@ -1,45 +1,45 @@
 import { Avatar } from '../components/Avatar'
-import { Bar, Flame, Gem, Moon, Pip, Speech } from '../components/ui'
+import { Bar, Flame, Gem, Icon, Moon, PALETTE, WeekStrip } from '../components/ui'
 import { ACTIVITY_BY_ID, CATEGORY_INFO, type Activity } from '../data/activities'
 import { describeUnlock, type Category } from '../data/items'
 import { DAILY_GOAL, STREAK_MILESTONES, nextReward } from '../lib/game'
 import type { Game } from '../lib/store'
 
-const MOODS: { emoji: string; label: string; activity: string }[] = [
-  { emoji: '😣', label: 'Stiff', activity: 'desk' },
-  { emoji: '😰', label: 'Stressed', activity: 'box' },
-  { emoji: '🥱', label: 'Sluggish', activity: 'wakeup' },
-  { emoji: '⚡', label: 'Restless', activity: 'hiit' },
-  { emoji: '🌀', label: 'Scattered', activity: 'ground' },
-  { emoji: '🌙', label: "Can't sleep", activity: 'sleepy478' },
+const MOODS: { label: string; activity: string }[] = [
+  { label: 'Stiff', activity: 'desk' },
+  { label: 'Stressed', activity: 'box' },
+  { label: 'Sluggish', activity: 'wakeup' },
+  { label: 'Restless', activity: 'hiit' },
+  { label: 'Scattered', activity: 'ground' },
+  { label: "Can't sleep", activity: 'sleepy478' },
 ]
 
 export function TopBar({ game }: { game: Game }) {
   const { stats } = game
   return (
     <header className="topbar">
-      <div className="tb-item" title="Level">
-        <span className="lvl-badge">{stats.level}</span>
-      </div>
-      <div className={`tb-item ${stats.doneToday ? 'flame-on' : 'muted'}`} title="Daily streak">
-        <Flame lit={stats.doneToday || stats.streak > 0} /> {stats.streak}
-      </div>
-      <div className="tb-item purple" title="Wind-down streak">
-        <Moon lit={stats.unwindStreak > 0} /> {stats.unwindStreak}
-      </div>
-      <div className="tb-item gold" title="Total XP">
-        <Gem /> {stats.xp.toLocaleString()}
-      </div>
+      <span className="stat-pill" title="Level">
+        Lv <b>{stats.level}</b>
+      </span>
+      <span className={`stat-pill ${stats.streak ? '' : 'dim'}`} title="Daily streak">
+        <Flame size={18} lit={stats.streak > 0} /> <b>{stats.streak}</b>
+      </span>
+      <span className={`stat-pill ${stats.unwindStreak ? '' : 'dim'}`} title="Wind-down streak">
+        <Moon size={17} lit={stats.unwindStreak > 0} /> <b>{stats.unwindStreak}</b>
+      </span>
+      <span className="stat-pill" title="Total XP">
+        <Gem size={17} /> <b>{stats.xp.toLocaleString()}</b>
+      </span>
     </header>
   )
 }
 
-function greeting(name: string, hour: number, doneToday: boolean) {
-  if (hour >= 21 || hour < 4) return `It's getting late, ${name}. Swap the scroll for a wind-down? 🌙`
-  if (doneToday) return `Nice work today, ${name}! Keep that glow going ✨`
-  if (hour < 11) return `Good morning, ${name}! A quick stretch to wake up? ☀️`
-  if (hour < 17) return `Hey ${name}! Got 2 minutes for a breather?`
-  return `Evening, ${name}! How about a little movement before dinner?`
+function greeting(hour: number) {
+  if (hour < 4) return 'Up late'
+  if (hour < 12) return 'Good morning'
+  if (hour < 17) return 'Good afternoon'
+  if (hour < 21) return 'Good evening'
+  return 'Up late'
 }
 
 interface Props {
@@ -51,76 +51,80 @@ interface Props {
 
 export function Home({ game, onCategory, onActivity, onCloset }: Props) {
   const { state, stats } = game
-  const hour = new Date().getHours()
+  const now = new Date()
+  const hour = now.getHours()
   const night = hour >= 20 || hour < 4
-  const reward = nextReward(stats)
-  const goalDone = stats.todayXp >= DAILY_GOAL
+  const reward = nextReward(stats, state.avatar.body)
+  const goalPct = Math.min(1, stats.todayXp / DAILY_GOAL)
+  const todayCat = (c: Category) => state.log.filter((e) => e.day === stats.today && e.cat === c).reduce((a, e) => a + e.xp, 0)
 
   return (
     <div className="screen home">
-      <TopBar game={game} />
+      <header className="home-head">
+        <div>
+          <small className="eyebrow">{now.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })}</small>
+          <h1 className="display">
+            {greeting(hour)},
+            <br />
+            {state.name}
+          </h1>
+        </div>
+      </header>
 
-      <section className="hero card">
-        <button className="hero-avatar" onClick={onCloset} aria-label="Open closet">
-          <Avatar config={state.avatar} pose={goalDone ? 'cheer' : 'wave'} />
-        </button>
+      <WeekStrip today={stats.today} active={stats.activeDays} />
+
+      <section className="hero-card" onClick={onCloset}>
+        <div className="hero-avatar">
+          <Avatar config={state.avatar} pose={goalPct >= 1 ? 'cheer' : 'wave'} />
+        </div>
         <div className="hero-info">
-          <div className="hero-name">{state.name}</div>
-          <div className="hero-level">Level {stats.level}</div>
-          <Bar value={stats.levelProgress} max={stats.levelNeed} color="#FFC800" label={`${stats.levelProgress} / ${stats.levelNeed} XP`} />
-          <div className="hero-pip">
-            <Pip mood={night ? 'sleepy' : 'happy'} size={54} />
-            <Speech>{greeting(state.name, hour, stats.doneToday)}</Speech>
+          <small className="eyebrow dark">Level {stats.level}</small>
+          <div className="hero-xp">{stats.xp.toLocaleString()} XP</div>
+          <Bar value={stats.levelProgress} max={stats.levelNeed} color="#0C0C0E" height={10} />
+          <small className="hero-sub">{stats.levelNeed - stats.levelProgress} XP to level {stats.level + 1}</small>
+          <div className="hero-stats">
+            <span>
+              <Flame size={18} lit={stats.streak > 0} /> {stats.streak} day{stats.streak === 1 ? '' : 's'}
+            </span>
+            <span>
+              <Moon size={16} lit={stats.unwindStreak > 0} /> {stats.unwindStreak} night{stats.unwindStreak === 1 ? '' : 's'}
+            </span>
           </div>
         </div>
       </section>
 
-      <section className="card goal">
-        <div className="goal-ring" style={{ ['--p' as string]: Math.min(1, stats.todayXp / DAILY_GOAL) }}>
-          <span>{goalDone ? '✓' : `${Math.min(stats.todayXp, DAILY_GOAL)}`}</span>
+      <h3 className="section-title">Today</h3>
+      <div className="pill-list">
+        <div className={`goal-pill ${goalPct >= 1 ? 'done' : ''}`}>
+          {['base', 'fill'].map((layer) => (
+            <div key={layer} className={`pill goal-layer ${layer}`} style={layer === 'fill' ? { clipPath: `inset(0 ${100 - goalPct * 100}% 0 0 round 999px)` } : undefined}>
+              <span className="pill-name">{goalPct >= 1 ? 'Daily goal smashed' : 'Daily goal'}</span>
+              <span className="pill-num">
+                {Math.min(stats.todayXp, DAILY_GOAL)}/{DAILY_GOAL} XP
+              </span>
+            </div>
+          ))}
         </div>
-        <div className="goal-text">
-          <div className="goal-title">{goalDone ? 'Daily goal smashed!' : 'Daily goal'}</div>
-          <div className="goal-sub">
-            {goalDone ? `${stats.todayXp} XP today — legend.` : `${stats.todayXp} / ${DAILY_GOAL} XP today`}
-          </div>
-        </div>
-        <div className="goal-flame">
-          <Flame size={36} lit={stats.doneToday} />
-          <b>{stats.streak}</b>
-        </div>
-      </section>
-
-      <h3 className="section-title">Pick your quest</h3>
-      <section className="cat-cards">
         {(['move', 'calm', 'unwind'] as Category[]).map((c) => {
           const info = CATEGORY_INFO[c]
-          const highlight = c === 'unwind' && night
+          const xp = todayCat(c)
           return (
-            <button
-              key={c}
-              className={`cat-card cat-${c} ${highlight ? 'glow' : ''}`}
-              onClick={() => onCategory(c)}
-              style={{ ['--c' as string]: info.color, ['--d' as string]: info.dark, ['--l' as string]: info.light }}
-            >
-              <span className="cat-emoji">{info.emoji}</span>
-              <span className="cat-text">
-                <span className="cat-name">{info.name}</span>
-                <span className="cat-tag">{c === 'unwind' && stats.unwindToday ? 'Done for tonight 🌙' : info.tagline}</span>
+            <button key={c} className={`pill cat-pill ${xp ? 'done' : ''} ${c === 'unwind' && night && !xp ? 'glow' : ''}`} style={{ background: info.color }} onClick={() => onCategory(c)}>
+              <span className="pill-text">
+                <span className="pill-name">{info.name}</span>
+                <small>{c === 'unwind' && night && !xp ? "Tonight's pick is ready" : info.tagline}</small>
               </span>
-              <span className="cat-xp">{stats.catXp[c]} XP</span>
-              {highlight && !stats.unwindToday && <span className="cat-pill">Tonight's pick ready</span>}
+              <span className="pill-num">{xp ? `+${xp}` : <Icon name="arrow" />}</span>
             </button>
           )
         })}
-      </section>
+      </div>
 
-      <h3 className="section-title">How are you feeling?</h3>
+      <h3 className="section-title">How do you feel?</h3>
       <section className="moods">
-        {MOODS.map((m) => (
-          <button key={m.label} className="mood" onClick={() => onActivity(ACTIVITY_BY_ID[m.activity])}>
-            <span className="mood-emoji">{m.emoji}</span>
-            <span>{m.label}</span>
+        {MOODS.map((m, i) => (
+          <button key={m.label} className="mood" style={{ ['--mc' as string]: PALETTE[(i * 3) % PALETTE.length] }} onClick={() => onActivity(ACTIVITY_BY_ID[m.activity])}>
+            {m.label}
           </button>
         ))}
       </section>
@@ -131,28 +135,25 @@ export function Home({ game, onCategory, onActivity, onCloset }: Props) {
           <section className="card reward" onClick={onCloset}>
             <div className="reward-preview">
               <Avatar config={{ ...state.avatar, [reward.item.slot]: reward.item.id }} showBg={reward.item.slot === 'background'} anim="still" />
-              <span className="reward-lock">🔒</span>
             </div>
             <div className="reward-info">
               <div className="reward-name">{reward.item.name}</div>
               <div className="reward-req">{describeUnlock(reward.item.unlock)}</div>
-              <Bar value={reward.have} max={reward.need} color="#1CB0F6" label={`${reward.have} / ${reward.need}`} />
+              <Bar value={reward.have} max={reward.need} color="#EDEB5E" height={8} />
             </div>
           </section>
         </>
       )}
 
       <h3 className="section-title">Streak milestones</h3>
-      <section className="card milestones">
-        {STREAK_MILESTONES.map((m) => {
+      <section className="milestones">
+        {STREAK_MILESTONES.map((m, i) => {
           const done = stats.best >= m
           return (
-            <div key={m} className={`milestone ${done ? 'done' : ''}`}>
-              <div className="milestone-badge">
-                <Flame size={28} lit={done} />
-              </div>
-              <b>{m} days</b>
-              <small>{m === 3 ? 'Kitty Ears' : m === 7 ? 'Superstar Fit' : m === 14 ? 'Crown' : 'Galaxy + Rockets'}</small>
+            <div key={m} className={`milestone ${done ? 'done' : ''}`} style={done ? { background: PALETTE[[0, 4, 3, 1][i]] } : undefined}>
+              <b>{m}</b>
+              <small>days</small>
+              <span>{m === 3 ? 'Kitty Ears' : m === 7 ? 'Superstar Fit' : m === 14 ? 'Crown' : 'Galaxy'}</span>
             </div>
           )
         })}

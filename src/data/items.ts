@@ -1,5 +1,6 @@
 export type Slot = 'hair' | 'top' | 'bottom' | 'shoes' | 'accessory' | 'background'
 export type Category = 'move' | 'calm' | 'unwind'
+export type Body = 'girl' | 'boy'
 
 export type Unlock =
   | { type: 'xp'; value: number }
@@ -14,9 +15,12 @@ export interface Item {
   name: string
   emoji: string
   unlock: Unlock | null
+  /** Omitted = available for every body type. */
+  for?: Body
 }
 
 export interface AvatarConfig {
+  body: Body
   skin: string
   hairColor: string
   hair: string
@@ -41,11 +45,15 @@ export const SLOT_LABELS: Record<Slot, string> = {
 
 export const ITEMS: Item[] = [
   // Hair
-  { id: 'long', slot: 'hair', name: 'Long & Lovely', emoji: '💇', unlock: null },
-  { id: 'bob', slot: 'hair', name: 'Cute Bob', emoji: '💇', unlock: null },
+  { id: 'long', slot: 'hair', name: 'Long & Lovely', emoji: '💇', unlock: null, for: 'girl' },
+  { id: 'bob', slot: 'hair', name: 'Cute Bob', emoji: '💇', unlock: null, for: 'girl' },
+  { id: 'buns', slot: 'hair', name: 'Space Buns', emoji: '💇', unlock: null, for: 'girl' },
+  { id: 'side', slot: 'hair', name: 'Side Part', emoji: '💇', unlock: null, for: 'boy' },
+  { id: 'spiky', slot: 'hair', name: 'Spiky', emoji: '💇', unlock: null, for: 'boy' },
+  { id: 'buzz', slot: 'hair', name: 'Buzz Cut', emoji: '💇', unlock: null, for: 'boy' },
   { id: 'short', slot: 'hair', name: 'Short Crop', emoji: '💇', unlock: null },
-  { id: 'buns', slot: 'hair', name: 'Space Buns', emoji: '💇', unlock: null },
-  { id: 'ponytail', slot: 'hair', name: 'Sporty Pony', emoji: '🎀', unlock: { type: 'category', cat: 'move', value: 100 } },
+  { id: 'ponytail', slot: 'hair', name: 'Sporty Pony', emoji: '🎀', unlock: { type: 'category', cat: 'move', value: 100 }, for: 'girl' },
+  { id: 'quiff', slot: 'hair', name: 'Big Quiff', emoji: '🕺', unlock: { type: 'category', cat: 'move', value: 100 }, for: 'boy' },
   { id: 'curly', slot: 'hair', name: 'Cloud Curls', emoji: '☁️', unlock: { type: 'level', value: 4 } },
 
   // Tops
@@ -60,11 +68,13 @@ export const ITEMS: Item[] = [
 
   // Bottoms
   { id: 'shorts', slot: 'bottom', name: 'Denim Shorts', emoji: '🩳', unlock: null },
-  { id: 'skirt', slot: 'bottom', name: 'Pleated Skirt', emoji: '👗', unlock: null },
+  { id: 'skirt', slot: 'bottom', name: 'Pleated Skirt', emoji: '👗', unlock: null, for: 'girl' },
+  { id: 'cargo', slot: 'bottom', name: 'Cargo Pants', emoji: '👖', unlock: null, for: 'boy' },
   { id: 'joggers', slot: 'bottom', name: 'Joggers', emoji: '👖', unlock: { type: 'xp', value: 100 } },
-  { id: 'plaid', slot: 'bottom', name: 'Plaid Skirt', emoji: '🧺', unlock: { type: 'category', cat: 'calm', value: 250 } },
+  { id: 'plaid', slot: 'bottom', name: 'Plaid Skirt', emoji: '🧺', unlock: { type: 'category', cat: 'calm', value: 250 }, for: 'girl' },
+  { id: 'cords', slot: 'bottom', name: 'Cosy Cords', emoji: '🤎', unlock: { type: 'category', cat: 'calm', value: 250 }, for: 'boy' },
   { id: 'pjpants', slot: 'bottom', name: 'PJ Pants', emoji: '😴', unlock: { type: 'category', cat: 'unwind', value: 160 } },
-  { id: 'leggings', slot: 'bottom', name: 'Power Leggings', emoji: '⚡', unlock: { type: 'category', cat: 'move', value: 350 } },
+  { id: 'leggings', slot: 'bottom', name: 'Power Tights', emoji: '⚡', unlock: { type: 'category', cat: 'move', value: 350 } },
 
   // Shoes
   { id: 'sneakers', slot: 'shoes', name: 'Sneakers', emoji: '👟', unlock: null },
@@ -78,7 +88,9 @@ export const ITEMS: Item[] = [
   { id: 'none', slot: 'accessory', name: 'Nothing', emoji: '✖️', unlock: null },
   { id: 'glasses', slot: 'accessory', name: 'Round Specs', emoji: '👓', unlock: null },
   { id: 'headphones', slot: 'accessory', name: 'Zen Headphones', emoji: '🎧', unlock: { type: 'category', cat: 'calm', value: 60 } },
-  { id: 'flower', slot: 'accessory', name: 'Daisy Clip', emoji: '🌼', unlock: { type: 'xp', value: 300 } },
+  { id: 'flower', slot: 'accessory', name: 'Daisy Clip', emoji: '🌼', unlock: { type: 'xp', value: 300 }, for: 'girl' },
+  { id: 'cap', slot: 'accessory', name: 'Blue Cap', emoji: '🧢', unlock: { type: 'xp', value: 300 }, for: 'boy' },
+  { id: 'beard', slot: 'accessory', name: 'Cosy Beard', emoji: '🧔', unlock: { type: 'level', value: 3 }, for: 'boy' },
   { id: 'catears', slot: 'accessory', name: 'Kitty Ears', emoji: '🐱', unlock: { type: 'streak', value: 3 } },
   { id: 'mask', slot: 'accessory', name: 'Sleep Mask', emoji: '😪', unlock: { type: 'category', cat: 'unwind', value: 120 } },
   { id: 'horns', slot: 'accessory', name: 'Little Devil', emoji: '😈', unlock: { type: 'xp', value: 1000 } },
@@ -98,7 +110,11 @@ export const ITEMS: Item[] = [
 
 export const ITEM_BY_ID: Record<string, Item> = Object.fromEntries(ITEMS.map((i) => [i.id, i]))
 
+export const fitsBody = (item: Item, body: Body) => !item.for || item.for === body
+export const itemsFor = (body: Body) => ITEMS.filter((i) => fitsBody(i, body))
+
 export const DEFAULT_AVATAR: AvatarConfig = {
+  body: 'girl',
   skin: SKIN_TONES[1],
   hairColor: HAIR_COLORS[0],
   hair: 'long',
@@ -107,6 +123,25 @@ export const DEFAULT_AVATAR: AvatarConfig = {
   shoes: 'sneakers',
   accessory: 'none',
   background: 'sky',
+}
+
+const BODY_DEFAULTS: Record<Body, Partial<AvatarConfig>> = {
+  girl: { hair: 'long', bottom: 'skirt' },
+  boy: { hair: 'side', bottom: 'cargo' },
+}
+
+/** Switch body type, swapping out any items that don't fit the new body. */
+export function withBody(config: AvatarConfig, body: Body): AvatarConfig {
+  const next: AvatarConfig = { ...config, body }
+  const slots: Slot[] = ['hair', 'top', 'bottom', 'shoes', 'accessory', 'background']
+  for (const slot of slots) {
+    const item = ITEM_BY_ID[next[slot]]
+    if (!item || !fitsBody(item, body)) {
+      const fallback = BODY_DEFAULTS[body][slot] ?? ITEMS.find((i) => i.slot === slot && !i.unlock && fitsBody(i, body))!.id
+      next[slot] = fallback as string
+    }
+  }
+  return next
 }
 
 export function describeUnlock(u: Unlock): string {

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Avatar } from '../components/Avatar'
-import { Bar, Button, Pip, Sheet } from '../components/ui'
+import { Bar, Button, Icon, Pip, Sheet } from '../components/ui'
 import { CATEGORY_INFO, STORY, type Activity, type Step } from '../data/activities'
 import type { AvatarConfig } from '../data/items'
 import { sfx, startAmbient } from '../lib/sound'
@@ -89,7 +89,9 @@ export function Player({ activity, minutes, avatar, demoSpeed, soundOn, onToggle
   return (
     <div className={`screen player player-${activity.category} ${dark ? 'player-dark' : ''}`} style={{ ['--c' as string]: info.color, ['--d' as string]: info.dark, ['--l' as string]: info.light }}>
       <header className="player-header">
-        <button className="close" onClick={quit} aria-label="Quit">✕</button>
+        <button className="icon-btn" onClick={quit} aria-label="Quit">
+          <Icon name="close" />
+        </button>
         <div className="player-bar">
           <Bar value={progress} max={1} color={info.color} height={16} />
         </div>
@@ -101,7 +103,8 @@ export function Player({ activity, minutes, avatar, demoSpeed, soundOn, onToggle
       </header>
 
       <div className="player-title">
-        <span>{activity.emoji}</span> {activity.title}
+        <small className="eyebrow">{info.name}</small>
+        {activity.title}
       </div>
 
       {activity.kind === 'steps' && step && (
@@ -119,11 +122,11 @@ export function Player({ activity, minutes, avatar, demoSpeed, soundOn, onToggle
           <div className="time-left">{fmt(total - elapsed)} left</div>
           <div className="player-controls">
             <Button variant="white" onClick={() => setPaused((p) => !p)}>
-              {paused ? '▶ Resume' : '❚❚ Pause'}
+              {paused ? 'Resume' : 'Pause'}
             </Button>
             {activity.kind === 'steps' && step && (
               <Button variant="white" onClick={() => setElapsed(Math.min(total, step.end + 0.01))}>
-                Next ⏭
+                Skip step
               </Button>
             )}
           </div>
@@ -229,7 +232,6 @@ function StoryView({ elapsed, total }: { elapsed: number; total: number }) {
   }, [shown])
   return (
     <div className="story-view">
-      <div className="story-moon">🌙</div>
       {STORY.slice(0, shown).map((line, i) => (
         <p key={i} className={i === shown - 1 ? 'current' : ''}>
           {line}

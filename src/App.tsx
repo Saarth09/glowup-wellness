@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { xpFor, type Activity } from './data/activities'
-import { ITEMS, type Category, type Item } from './data/items'
+import { itemsFor, type Category, type Item } from './data/items'
+import { Icon } from './components/ui'
 import { computeStats, dayKey, isUnlocked, unlockedIds } from './lib/game'
 import { setSoundEnabled } from './lib/sound'
 import { useGame } from './lib/store'
@@ -22,11 +23,11 @@ type Overlay =
   | { type: 'rewards'; result: Result; from: Overlay | null }
   | null
 
-const TABS: { id: Tab; label: string; icon: string }[] = [
-  { id: 'home', label: 'Home', icon: '🏠' },
-  { id: 'closet', label: 'Closet', icon: '👗' },
-  { id: 'progress', label: 'Progress', icon: '📊' },
-  { id: 'me', label: 'Me', icon: '🙂' },
+const TABS: { id: Tab; label: string; icon: 'home' | 'closet' | 'chart' | 'user' }[] = [
+  { id: 'home', label: 'Home', icon: 'home' },
+  { id: 'closet', label: 'Closet', icon: 'closet' },
+  { id: 'progress', label: 'Progress', icon: 'chart' },
+  { id: 'me', label: 'Me', icon: 'user' },
 ]
 
 export default function App() {
@@ -43,10 +44,10 @@ export default function App() {
     window.scrollTo(0, 0)
   }, [tab, overlay])
 
-  const unseen = ITEMS.filter((i) => i.unlock && isUnlocked(i, stats) && !state.seen.includes(i.id)).length
+  const unseen = itemsFor(state.avatar.body).filter((i) => i.unlock && isUnlocked(i, stats) && !state.seen.includes(i.id)).length
 
   const switchTab = (t: Tab) => {
-    if (tab === 'closet' && t !== 'closet') update((s) => ({ seen: [...new Set([...s.seen, ...unlockedIds(computeStats(s))])] }))
+    if (tab === 'closet' && t !== 'closet') update((s) => ({ seen: [...new Set([...s.seen, ...unlockedIds(computeStats(s), s.avatar.body)])] }))
     setTab(t)
   }
 
@@ -61,7 +62,7 @@ export default function App() {
       const before = computeStats(state)
       const entry = { id: `${Date.now()}`, activityId: activity.id, cat: activity.category, xp, minutes, day: dayKey(state.dayOffset), ts: Date.now() }
       const after = computeStats({ ...state, log: [...state.log, entry] })
-      const newItems = ITEMS.filter((i) => i.unlock && isUnlocked(i, after) && !state.seen.includes(i.id))
+      const newItems = itemsFor(state.avatar.body).filter((i) => i.unlock && isUnlocked(i, after) && !state.seen.includes(i.id))
       game.logActivity(activity.id, activity.category, xp, minutes)
       update((s) => ({ seen: [...new Set([...s.seen, ...newItems.map((i) => i.id)])] }))
       setOverlay({ type: 'rewards', result: { activity, minutes, xp, before, after, newItems }, from })
@@ -123,7 +124,7 @@ export default function App() {
           <nav className="bottom-nav">
             {TABS.map((t) => (
               <button key={t.id} className={`nav-btn ${tab === t.id ? 'active' : ''}`} onClick={() => switchTab(t.id)}>
-                <span className="nav-icon">{t.icon}</span>
+                <Icon name={t.icon} size={20} />
                 <span className="nav-label">{t.label}</span>
                 {t.id === 'closet' && unseen > 0 && <span className="nav-badge">{unseen}</span>}
               </button>

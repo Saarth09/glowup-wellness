@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { HAIR_COLORS, ITEMS, SKIN_TONES, SLOT_LABELS, describeUnlock, type AvatarConfig, type Item, type Slot } from '../data/items'
+import { HAIR_COLORS, SKIN_TONES, SLOT_LABELS, describeUnlock, itemsFor, withBody, type AvatarConfig, type Body, type Item, type Slot } from '../data/items'
 import { isUnlocked, unlockProgress, type Stats } from '../lib/game'
 import { sfx } from '../lib/sound'
 import { Avatar } from './Avatar'
@@ -15,9 +15,22 @@ interface Props {
   seen?: string[]
 }
 
+export function BodyToggle({ body, onChange }: { body: Body; onChange: (b: Body) => void }) {
+  return (
+    <div className="segmented" role="radiogroup" aria-label="Character">
+      {(['girl', 'boy'] as Body[]).map((b) => (
+        <button key={b} role="radio" aria-checked={body === b} className={body === b ? 'active' : ''} onClick={() => onChange(b)}>
+          {b === 'girl' ? 'Girl' : 'Boy'}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 export function Customizer({ config, onChange, stats, seen }: Props) {
   const [slot, setSlot] = useState<Slot>('hair')
-  const items = ITEMS.filter((i) => i.slot === slot && (stats || !i.unlock))
+  const pool = itemsFor(config.body)
+  const items = pool.filter((i) => i.slot === slot && (stats || !i.unlock))
 
   const equip = (item: Item) => {
     sfx.step()
@@ -25,7 +38,7 @@ export function Customizer({ config, onChange, stats, seen }: Props) {
   }
 
   const newIn = (s: Slot) =>
-    stats && seen ? ITEMS.some((i) => i.slot === s && i.unlock && isUnlocked(i, stats) && !seen.includes(i.id)) : false
+    stats && seen ? pool.some((i) => i.slot === s && i.unlock && isUnlocked(i, stats) && !seen.includes(i.id)) : false
 
   return (
     <div className="customizer">
@@ -40,6 +53,10 @@ export function Customizer({ config, onChange, stats, seen }: Props) {
 
       {slot === 'hair' && (
         <div className="swatch-rows">
+          <div className="swatch-row">
+            <span className="swatch-label">Body</span>
+            <BodyToggle body={config.body} onChange={(b) => onChange(withBody(config, b))} />
+          </div>
           <div className="swatch-row">
             <span className="swatch-label">Skin</span>
             {SKIN_TONES.map((c) => (
@@ -82,15 +99,15 @@ export function Customizer({ config, onChange, stats, seen }: Props) {
               aria-disabled={!unlocked}
               title={item.unlock && !unlocked ? describeUnlock(item.unlock) : item.name}
             >
-              {isNew && <span className="new-badge">NEW</span>}
+              {isNew && <span className="new-badge">New</span>}
               <div className="item-preview">
                 <Avatar config={preview} showBg={slot === 'background'} anim="still" />
               </div>
               <div className="item-name">{item.name}</div>
               {prog && item.unlock && (
                 <div className="item-lock">
-                  <span>🔒 {describeUnlock(item.unlock)}</span>
-                  <Bar value={prog.have} max={prog.need} height={8} color="#FFC800" />
+                  <span>{describeUnlock(item.unlock)}</span>
+                  <Bar value={prog.have} max={prog.need} height={6} color="#EDEB5E" />
                 </div>
               )}
             </button>

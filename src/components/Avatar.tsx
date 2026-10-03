@@ -64,6 +64,8 @@ const BOTTOMS: Record<string, { color: string; long: boolean; skirt: boolean }> 
   plaid: { color: '#E9D8A6', long: false, skirt: true },
   pjpants: { color: '#C9B8FF', long: true, skirt: false },
   leggings: { color: '#2E2E40', long: true, skirt: false },
+  cargo: { color: '#A99A6B', long: true, skirt: false },
+  cords: { color: '#8B5A3C', long: true, skirt: false },
 }
 
 /* --------------------------- backgrounds --------------------------- */
@@ -248,6 +250,19 @@ function HairFront({ style, color }: { style: string; color: string }) {
       return <path {...p} d="M56 86 C50 44 76 26 102 26 C130 26 152 44 144 86 C136 66 120 52 94 58 C82 62 68 70 56 86 Z" />
     case 'curly':
       return <Blob circles={CURL_FRONT} color={color} />
+    case 'side':
+      return (
+        <g>
+          <path {...p} d="M54 86 C48 42 76 26 104 26 C132 26 152 44 146 86 C143 68 134 56 120 50 C104 58 80 60 64 66 C59 72 56 78 54 86 Z" />
+          <path d="M120 30 Q114 40 118 50" fill="none" stroke={INK} strokeWidth="3" strokeLinecap="round" />
+        </g>
+      )
+    case 'spiky':
+      return <path {...p} d="M54 86 C50 62 54 48 60 42 L62 22 L76 34 L84 12 L96 30 L108 10 L116 30 L132 16 L134 38 C146 46 150 62 146 86 C140 70 130 60 114 58 C100 64 82 64 70 60 C62 66 56 74 54 86 Z" />
+    case 'buzz':
+      return <path {...p} d="M57 76 C55 44 78 32 100 32 C122 32 145 44 143 76 C135 60 118 52 100 52 C82 52 65 60 57 76 Z" />
+    case 'quiff':
+      return <path {...p} d="M54 86 C48 48 68 32 92 28 C98 12 124 4 144 16 C134 18 128 24 130 32 C146 42 152 62 146 86 C140 68 128 58 110 56 C96 62 78 62 66 60 C60 66 56 74 54 86 Z" />
     default:
       return <path {...p} d={BANGS} />
   }
@@ -255,9 +270,25 @@ function HairFront({ style, color }: { style: string; color: string }) {
 
 /* --------------------------- accessories --------------------------- */
 
-function Accessory({ id }: { id: string }) {
+function Accessory({ id, hairColor }: { id: string; hairColor: string }) {
   const o = { stroke: INK, strokeWidth: SW, strokeLinejoin: 'round' as const }
   switch (id) {
+    case 'cap':
+      return (
+        <g {...o}>
+          <path d="M56 62 C54 22 146 22 144 62 Z" fill="#3D6BFF" />
+          <path d="M50 62 Q100 50 150 62 Q152 72 100 70 Q48 72 50 62 Z" fill="#2B4FCC" />
+          <circle cx="100" cy="26" r="4" fill="#2B4FCC" strokeWidth="2.5" />
+          <path d="M88 46 L112 46" stroke="#fff" strokeWidth="4" strokeLinecap="round" />
+        </g>
+      )
+    case 'beard':
+      return (
+        <g {...o}>
+          <path d="M57 88 C58 116 80 126 100 126 C120 126 142 116 143 88 C136 102 122 110 110 108 Q100 104 90 108 C78 110 64 102 57 88 Z" fill={hairColor} />
+          <path d="M88 100 Q100 94 112 100 Q100 102 88 100 Z" fill={hairColor} strokeWidth="2.5" />
+        </g>
+      )
     case 'glasses':
       return (
         <g fill="rgba(255,255,255,0.25)" {...o}>
@@ -330,14 +361,20 @@ function Accessory({ id }: { id: string }) {
 
 /* ------------------------------ clothes ------------------------------ */
 
-function Top({ id, uid }: { id: string; uid: string }) {
+function Top({ id, uid, broad }: { id: string; uid: string; broad: boolean }) {
   const t = TOPS[id] ?? TOPS.tee
   const o = { stroke: INK, strokeWidth: SW, strokeLinejoin: 'round' as const }
-  const base = 'M76 126 Q100 120 124 126 L131 172 Q100 177 69 172 Z'
-  const wide = 'M73 126 Q100 118 127 126 L135 176 Q100 182 65 176 Z'
+  const base = broad ? 'M72 125 Q100 119 128 125 L132 172 Q100 177 68 172 Z' : 'M76 126 Q100 120 124 126 L131 172 Q100 177 69 172 Z'
+  const wide = broad ? 'M70 125 Q100 117 130 125 L136 176 Q100 182 64 176 Z' : 'M73 126 Q100 118 127 126 L135 176 Q100 182 65 176 Z'
   switch (id) {
     case 'tank':
-      return <path d="M80 126 L90 125 Q100 136 110 125 L120 126 L131 172 Q100 177 69 172 Z" fill={t.color} {...o} />
+      return (
+        <path
+          d={broad ? 'M78 125 L89 124 Q100 136 111 124 L122 125 L132 172 Q100 177 68 172 Z' : 'M80 126 L90 125 Q100 136 110 125 L120 126 L131 172 Q100 177 69 172 Z'}
+          fill={t.color}
+          {...o}
+        />
+      )
     case 'hoodie':
       return (
         <g>
@@ -372,7 +409,7 @@ function Top({ id, uid }: { id: string; uid: string }) {
         <g>
           <path d={base} fill={t.color} {...o} />
           <path d="M90 124 Q100 132 110 124" fill="none" stroke="#fff" strokeWidth="3" />
-          <text x="100" y="164" textAnchor="middle" fontSize="28" fontWeight="900" fill="#fff" stroke={INK} strokeWidth="2" fontFamily="Nunito, sans-serif">1</text>
+          <text x="100" y="164" textAnchor="middle" fontSize="28" fontWeight="900" fill="#fff" stroke={INK} strokeWidth="2" fontFamily="Bricolage Grotesque, sans-serif">1</text>
         </g>
       )
     case 'startop':
@@ -442,6 +479,15 @@ function Bottom({ id, uid, sitting }: { id: string; uid: string; sitting: boolea
       <path d="M68 164 L132 164 L129 188 Q100 192 71 188 Z" fill={b.color} />
       <path d="M71 188 L68 164 L132 164 L129 188" fill="none" {...o} />
       {!sitting && <path d="M100 176 L100 192" stroke={INK} strokeWidth="3" strokeLinecap="round" />}
+      {id === 'cargo' && !sitting && (
+        <g fill="#8E8055" stroke={INK} strokeWidth="2.5">
+          <rect x="82" y="196" width="11" height="11" rx="2" />
+          <rect x="107" y="196" width="11" height="11" rx="2" />
+        </g>
+      )}
+      {id === 'cords' && !sitting && (
+        <path d="M84 194 L84 218 M92 194 L92 218 M108 194 L108 218 M116 194 L116 218" stroke="#6E4329" strokeWidth="2" />
+      )}
     </g>
   )
 }
@@ -570,6 +616,7 @@ export function Avatar({ config, pose = 'idle', face, anim = 'bob', showBg = tru
   const uid = useId().replace(/:/g, '')
   const top = TOPS[config.top] ?? TOPS.tee
   const bottom = BOTTOMS[config.bottom] ?? BOTTOMS.shorts
+  const boy = config.body === 'boy'
   const sleeping = pose === 'sleep'
   const legPose = pose === 'tree' ? LEGS.tree : pose === 'sit' ? LEGS.sit : LEGS.stand
   const sitting = pose === 'sit'
@@ -615,7 +662,7 @@ export function Avatar({ config, pose = 'idle', face, anim = 'bob', showBg = tru
             {arm(armR)}
           </g>
         )}
-        <Top id={config.top} uid={uid} />
+        <Top id={config.top} uid={uid} broad={boy} />
         {sitting && (
           <g>
             {arm(armL)}
@@ -623,15 +670,16 @@ export function Avatar({ config, pose = 'idle', face, anim = 'bob', showBg = tru
           </g>
         )}
 
-        <rect x="91" y="108" width="18" height="20" rx="6" fill={config.skin} stroke={INK} strokeWidth={SW} />
+        <rect x={boy ? 89 : 91} y="108" width={boy ? 22 : 18} height="20" rx="6" fill={config.skin} stroke={INK} strokeWidth={SW} />
         {config.top === 'sweater' && <rect x="88" y="116" width="24" height="14" rx="5" fill={top.color} stroke={INK} strokeWidth={SW} />}
         <ellipse cx="100" cy="76" rx="44" ry="41" fill={config.skin} stroke={INK} strokeWidth={SW} />
-        <ellipse cx="72" cy="96" rx="7.5" ry="4.5" fill="#FF9FB0" opacity="0.75" />
-        <ellipse cx="128" cy="96" rx="7.5" ry="4.5" fill="#FF9FB0" opacity="0.75" />
+        <ellipse cx="72" cy="96" rx={boy ? 6 : 7.5} ry={boy ? 3.5 : 4.5} fill="#FF9FB0" opacity={boy ? 0.5 : 0.75} />
+        <ellipse cx="128" cy="96" rx={boy ? 6 : 7.5} ry={boy ? 3.5 : 4.5} fill="#FF9FB0" opacity={boy ? 0.5 : 0.75} />
         <Eyes face={f} />
+        {boy && <path d="M75 71 L90 69 M110 69 L125 71" stroke={INK} strokeWidth="4" strokeLinecap="round" />}
         <Mouth face={f} />
-        <HairFront style={config.hair} color={config.hairColor} />
-        <Accessory id={config.accessory} />
+        <HairFront style={config.accessory === 'cap' && ['spiky', 'quiff', 'curly'].includes(config.hair) ? 'short' : config.hair} color={config.hairColor} />
+        <Accessory id={config.accessory} hairColor={config.hairColor} />
 
         {sleeping && (
           <g>
@@ -646,7 +694,7 @@ export function Avatar({ config, pose = 'idle', face, anim = 'bob', showBg = tru
         )}
       </g>
       {sleeping && (
-        <g className="av-zzz" fill={INK} fontFamily="Nunito, sans-serif" fontWeight="900">
+        <g className="av-zzz" fill={INK} fontFamily="Bricolage Grotesque, sans-serif" fontWeight="900">
           <text x="150" y="40" fontSize="18">z</text>
           <text x="164" y="24" fontSize="13">z</text>
         </g>

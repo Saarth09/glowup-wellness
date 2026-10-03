@@ -1,5 +1,5 @@
 import { Avatar } from '../components/Avatar'
-import { Button, Moon, Pip } from '../components/ui'
+import { Button, Icon, Moon, Pip } from '../components/ui'
 import { ACTIVITIES, xpFor, type Activity } from '../data/activities'
 import { shiftDay } from '../lib/game'
 import type { Game } from '../lib/store'
@@ -43,7 +43,9 @@ export function UnwindScreen({ game, onBack, onStart }: Props) {
   return (
     <div className="screen unwind">
       <header className="unwind-header">
-        <button className="back light" onClick={onBack} aria-label="Back">←</button>
+        <button className="icon-btn" onClick={onBack} aria-label="Back">
+          <Icon name="back" />
+        </button>
         <span>Unwind</span>
         <span className="unwind-streak">
           <Moon /> {stats.unwindStreak}
@@ -70,14 +72,12 @@ export function UnwindScreen({ game, onBack, onStart }: Props) {
             <p>One slow thing, then sleep. No feed, no autoplay.</p>
           </div>
           <div className="unwind-card">
-            <div className="unwind-emoji">{pick.emoji}</div>
-            <div className="unwind-card-body">
-              <b>{pick.title}</b>
-              <span>{pick.blurb}</span>
-              <small>
-                {pick.minutes} min · +{xpFor(pick.difficulty, pick.minutes)} XP · 🌙 keeps your wind-down streak
-              </small>
-            </div>
+            <small className="eyebrow dark">Tonight's pick</small>
+            <b>{pick.title}</b>
+            <span>{pick.blurb}</span>
+            <small>
+              {pick.minutes} min · +{xpFor(pick.difficulty, pick.minutes)} XP · keeps your wind-down streak
+            </small>
           </div>
           <Button block variant="purple" onClick={() => onStart(pick, pick.minutes)}>
             Begin wind-down
@@ -102,9 +102,9 @@ export function UnwindScreen({ game, onBack, onStart }: Props) {
       </div>
 
       <ul className="unwind-rules">
-        <li>📵 We'll never suggest "one more" after you finish</li>
-        <li>🔅 Dim colours, slow motion, nothing flashing</li>
-        <li>🐰 3-night streak unlocks Bunny Slippers</li>
+        <li>We'll never suggest "one more" after you finish</li>
+        <li>Dim colours, slow motion, nothing flashing</li>
+        <li>A 3-night streak unlocks Bunny Slippers</li>
       </ul>
     </div>
   )

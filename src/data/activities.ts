@@ -36,9 +36,9 @@ export function xpFor(difficulty: Difficulty, minutes: number): number {
 }
 
 export const CATEGORY_INFO: Record<Category, { name: string; tagline: string; color: string; dark: string; light: string; emoji: string }> = {
-  move: { name: 'Move', tagline: 'Stretch, flow & sweat a little', color: '#58CC02', dark: '#46A302', light: '#D7FFB8', emoji: '🤸' },
-  calm: { name: 'Calm', tagline: 'Breathe, pause & reset', color: '#1CB0F6', dark: '#1899D6', light: '#DDF4FF', emoji: '🧘' },
-  unwind: { name: 'Unwind', tagline: 'One slow thing before sleep', color: '#8B6CF6', dark: '#6F52D9', light: '#EEE8FF', emoji: '🌙' },
+  move: { name: 'Move', tagline: 'Stretch, flow & sweat a little', color: '#D4F06B', dark: '#A9C93C', light: 'rgba(212,240,107,0.12)', emoji: '🤸' },
+  calm: { name: 'Calm', tagline: 'Breathe, pause & reset', color: '#A9ADFF', dark: '#7C80F2', light: 'rgba(169,173,255,0.12)', emoji: '🧘' },
+  unwind: { name: 'Unwind', tagline: 'One slow thing before sleep', color: '#C7B8FF', dark: '#9C8BF0', light: 'rgba(199,184,255,0.12)', emoji: '🌙' },
 }
 
 export const ACTIVITIES: Activity[] = [

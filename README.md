@@ -12,24 +12,26 @@ People who *want* to look after their body and mind but struggle with consistenc
 
 The whole app is one loop:
 
-> **Pick an activity → do it → earn XP → keep your streak → unlock an item → glow up your avatar**
+> **Choose what you need → quickly personalise → get a recommended session → earn XP → unlock items → glow up your avatar**
+
+There's no generic "How are you feeling?" button on the home screen. Each part of the app asks its own questions, because what's useful to know depends on what you want to do.
 
 - **Your own avatar.** Pick a girl or boy character at sign-up, then choose skin tone, hair, hair colour, outfit, shoes, extras and world. Each body type has its own wardrobe: boys get side parts, spiky hair, buzz cuts, quiffs, cargo pants, cords, a cap and a beard, and girls get long hair, bobs, space buns, ponytails and skirts. Most other items are shared. You can switch any time. It's hand-drawn in SVG, with thick outlines and flat colours, and it blinks, bounces and does the poses with you.
-- **Move** 🤸: 9 movement quests (stretching, mobility, yoga, squats, planks, HIIT), grouped from *Warm up* to *Boss mode*. Your avatar acts out each step.
-- **Calm** 🧘: box breathing, 4-7-8, a body scan, grounding, loving-kindness and focus training. You can pick your own session length.
-- **Unwind** 🌙: a dedicated bedtime mode that is the opposite of a feed. It offers **one** curated wind-down per night (a slow bedtime story, rain or ocean soundscapes, a body scan, sleepy breathing, or a three-good-things journal). You get one swap, then a "Goodnight, phone down" screen. Nothing autoplays and nothing suggests "one more".
-- **XP = minutes × 8 × difficulty + completion bonus.** Harder and longer activities give more XP.
+- **Move** 🤸: *understand your physical context, recommend movement, reward effort.* Six one-tap questions cover what you're wearing, where you are, whether people are around, how much time you have, your energy, and your space. Your answers place you on an **intensity ladder**: stretching → mobility → squats → lunges → jumping. Someone at the office, in workwear, with 5 minutes gets a desk-friendly session. Someone at home with 20 minutes and high energy gets a full cardio burst that climbs the ladder. The app explains each limit, and you can step easier or harder. **XP = minutes × 8 × intensity (×1 to ×2.2).**
+- **Meditate** 🧘: *understand your emotional state, recommend a meditation, reward time.* Four questions: how you feel (calm, anxious, frustrated, overwhelmed or tired), what you want to feel after (calmer, focused, relaxed or reset), how long you have, and guided or quiet. A matching engine picks the best session, explains why, and offers two alternatives. For example, frustrated → *Let It Go* (a short tension release), and tired + quiet → *Quiet Sit*. **XP = 10 per minute**, so 15 minutes earns more than 3, but 3 still counts.
+- **Wind down** 🌙: *keep friction low, build a calming sequence, reward consistency.* There's no questionnaire, just one tap: *Clear my head, Relax my body, Disconnect from my phone, Prepare for sleep,* or *Just give me something calming*, with a 5 or 15 minute toggle. The app builds a **sequence** of 3–5 parts, for example Do Not Disturb → breathing → gentle stretch → rain audio, which plays straight through. After that, a "Goodnight, phone down" screen; nothing suggests "one more". **XP = 6 per minute + 5 for every night in a row** (up to 7 nights), so showing up beats grinding.
 - **Two streaks:** a 🔥 daily wellness streak and a 🌙 wind-down streak, with milestones at 3, 7, 14 and 30 days.
-- **Levels** and **51 avatar items** (43–44 per body type). For example: 500 XP gets you *Chonky Boots*, a 7-day streak gets you the *Superstar Fit*, 1,000 XP gets you *Little Devil* horns, and 30 days unlocks the *Galaxy* world plus *Rocket Kicks*. Items are themed by category: Calm earns cosy knits and headphones, Unwind earns PJs and bunny slippers, and Move earns jerseys and high-tops.
-- **"How are you feeling?"**: tap Stiff, Stressed, Sluggish, Restless, Scattered or Can't sleep to get the right activity straight away.
+- **Levels** and **51 avatar items** (43–44 per body type). For example: 500 XP gets you *Chonky Boots*, a 7-day streak gets you the *Superstar Fit*, 1,000 XP gets you *Little Devil* horns, and 30 days unlocks the *Galaxy* world plus *Rocket Kicks*. Items are themed by category: Meditation earns cosy knits and headphones, Wind down earns PJs and bunny slippers, and Move earns jerseys and high-tops.
 - **Progress dashboard:** total XP, level, both streaks, activities done, time spent, XP by category, a 4-week streak calendar, items unlocked, and progress toward the next rewards.
 - A clean dark UI inspired by habit apps like Liftoff: bold type, bright full-round pills, and crossed-out items once you've done them. It still has game moments: confetti, level-up and unlock reveals, and synthesised sound effects.
 
 ## What makes it interesting
 
 1. **Your wellness shows up on a character that belongs to you.** Rewards are visible things you wear, not abstract badges.
-2. **The bedtime mode is designed to end.** Most apps compete for your last hour of the night. Unwind deliberately gives you one thing, then tells you to go to sleep, and still rewards you for it with its own streak.
-3. **It respects your time and privacy.** There's no account and no backend. Progress lives on your device, and every sound is generated in the browser.
+2. **Recommendations fit real life.** A workout that ignores your office shirt or your 3 free minutes won't get done. Asking the right few questions for each goal means the app suggests something you'll actually do.
+3. **Each category rewards what matters for it.** Movement rewards effort, meditation rewards time, and winding down rewards consistency, so no one is pushed into a competitive bedtime.
+4. **The bedtime mode is designed to end.** Most apps compete for your last hour of the night. Wind down builds one short sequence, then tells you to go to sleep.
+5. **It respects your time and privacy.** There's no account and no backend. Progress lives on your device, and every sound is generated in the browser.
 
 ## Try it fast (for reviewers)
 

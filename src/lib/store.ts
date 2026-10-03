@@ -49,9 +49,9 @@ export function useGame() {
   }, [])
 
   const logActivity = useCallback(
-    (activityId: string, cat: Category, xp: number, minutes: number) => {
+    (activityId: string, cat: Category, xp: number, minutes: number, title?: string) => {
       setState((s) => {
-        const entry: Entry = { id: newId(), activityId, cat, xp, minutes, day: dayKey(s.dayOffset), ts: Date.now() }
+        const entry: Entry = { id: newId(), activityId, cat, xp, minutes, day: dayKey(s.dayOffset), ts: Date.now(), title }
         return { ...s, log: [...s.log, entry] }
       })
     },

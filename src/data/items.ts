@@ -155,6 +155,6 @@ export function describeUnlock(u: Unlock): string {
     case 'unwindStreak':
       return `${u.value}-night wind-down streak`
     case 'category':
-      return `${u.value} ${u.cat[0].toUpperCase() + u.cat.slice(1)} XP`
+      return `${u.value} ${{ move: 'Move', calm: 'Meditation', unwind: 'Wind-down' }[u.cat]} XP`
   }
 }

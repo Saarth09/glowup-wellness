@@ -25,7 +25,17 @@ export interface Activity {
   steps?: Step[]
   breath?: { inhale: number; hold: number; exhale: number; hold2: number }
   sound?: 'rain' | 'waves'
+  /** Pre-computed reward for generated sessions (overrides the difficulty formula). */
+  xp?: number
+  /** Meditation matching tags. */
+  helps?: Feeling[]
+  gives?: Outcome[]
+  style?: 'guided' | 'quiet' | 'either'
+  reason?: string
 }
+
+export type Feeling = 'calm' | 'anxious' | 'frustrated' | 'overwhelmed' | 'tired'
+export type Outcome = 'calmer' | 'focused' | 'relaxed' | 'reset'
 
 export const DIFFICULTY_LABEL: Record<Difficulty, string> = { 1: 'Easy', 2: 'Medium', 3: 'Hard' }
 const DIFFICULTY_MULT: Record<Difficulty, number> = { 1: 1, 2: 1.5, 3: 2.2 }
@@ -35,10 +45,25 @@ export function xpFor(difficulty: Difficulty, minutes: number): number {
   return Math.round(minutes * 8 * DIFFICULTY_MULT[difficulty]) + COMPLETION_BONUS
 }
 
+/** Movement rewards effort: intensity rung (1–5) × time. */
+export const INTENSITY_MULT = [1, 1, 1.25, 1.5, 1.85, 2.2]
+export const moveXp = (intensity: number, minutes: number) => Math.round(minutes * 8 * INTENSITY_MULT[intensity]) + COMPLETION_BONUS
+
+/** Meditation rewards time spent. */
+export const MEDITATE_XP_PER_MIN = 10
+export const meditateXp = (minutes: number) => Math.round(minutes * MEDITATE_XP_PER_MIN) + COMPLETION_BONUS
+
+/** Winding down rewards consistency: time plus a bonus for every night in a row (capped). */
+export const UNWIND_XP_PER_MIN = 6
+export const UNWIND_NIGHT_BONUS = 5
+export const UNWIND_BONUS_CAP = 7
+export const unwindBonus = (nightsInARow: number) => Math.min(nightsInARow, UNWIND_BONUS_CAP) * UNWIND_NIGHT_BONUS
+export const unwindXp = (minutes: number, nightsInARow: number) => Math.round(minutes * UNWIND_XP_PER_MIN) + COMPLETION_BONUS + unwindBonus(nightsInARow)
+
 export const CATEGORY_INFO: Record<Category, { name: string; tagline: string; color: string; dark: string; light: string; emoji: string }> = {
-  move: { name: 'Move', tagline: 'Stretch, flow & sweat a little', color: '#D4F06B', dark: '#A9C93C', light: 'rgba(212,240,107,0.12)', emoji: '🤸' },
-  calm: { name: 'Calm', tagline: 'Breathe, pause & reset', color: '#A9ADFF', dark: '#7C80F2', light: 'rgba(169,173,255,0.12)', emoji: '🧘' },
-  unwind: { name: 'Unwind', tagline: 'One slow thing before sleep', color: '#C7B8FF', dark: '#9C8BF0', light: 'rgba(199,184,255,0.12)', emoji: '🌙' },
+  move: { name: 'Move', tagline: 'A workout that fits where you are', color: '#D4F06B', dark: '#A9C93C', light: 'rgba(212,240,107,0.12)', emoji: '🤸' },
+  calm: { name: 'Meditate', tagline: 'Matched to how you feel', color: '#A9ADFF', dark: '#7C80F2', light: 'rgba(169,173,255,0.12)', emoji: '🧘' },
+  unwind: { name: 'Wind down', tagline: 'A calm sequence before sleep', color: '#C7B8FF', dark: '#9C8BF0', light: 'rgba(199,184,255,0.12)', emoji: '🌙' },
 }
 
 export const ACTIVITIES: Activity[] = [
@@ -169,10 +194,48 @@ export const ACTIVITIES: Activity[] = [
     id: 'box', category: 'calm', title: 'Box Breathing', emoji: '🟦', difficulty: 1, minutes: 2, durations: [1, 2, 4], kind: 'breath',
     blurb: 'In 4, hold 4, out 4, hold 4. Used by athletes & astronauts.',
     breath: { inhale: 4, hold: 4, exhale: 4, hold2: 4 },
+    helps: ['anxious', 'overwhelmed'], gives: ['calmer', 'focused'], style: 'either',
+    reason: 'An even, counted rhythm gives a racing mind something steady to hold on to.',
   },
   {
-    id: 'mindful1', category: 'calm', title: 'Mindful Minute', emoji: '🫧', difficulty: 1, minutes: 1, kind: 'steps',
-    blurb: 'Sixty seconds of just… being here.',
+    id: 'release', category: 'calm', title: 'Let It Go', emoji: '✊', difficulty: 1, minutes: 3, kind: 'steps',
+    blurb: 'Squeeze the tension out, then breathe it away.',
+    helps: ['frustrated'], gives: ['calmer', 'reset'], style: 'guided',
+    reason: 'Frustration lives in the body. Clenching and releasing burns it off fast.',
+    steps: [
+      { text: 'Make tight fists. Squeeze… and let go. Twice more.', seconds: 30, pose: 'sit', anim: 'breathe' },
+      { text: 'Big breath in through your nose. Sigh it out through your mouth.', seconds: 30, pose: 'sit', anim: 'breathe' },
+      { text: 'Name the feeling, silently: "This is frustration."', seconds: 30, pose: 'sit', anim: 'breathe' },
+      { text: 'Picture setting it down on the floor beside you.', seconds: 30, pose: 'sit', anim: 'breathe' },
+      { text: 'Unclench your jaw. Drop your shoulders.', seconds: 30, pose: 'sit', anim: 'breathe' },
+      { text: 'Three slow breaths. You can pick it back up later, or not.', seconds: 30, pose: 'sit', anim: 'breathe' },
+    ],
+  },
+  {
+    id: 'bright', category: 'calm', title: 'Bright Breath', emoji: '⚡', difficulty: 1, minutes: 3, kind: 'breath',
+    blurb: 'A quicker, lifting rhythm for when you are running on empty.',
+    breath: { inhale: 3, hold: 1, exhale: 2, hold2: 0 },
+    helps: ['tired'], gives: ['focused', 'reset'], style: 'either',
+    reason: 'Slightly longer inhales gently wake the body up without caffeine.',
+  },
+  {
+    id: 'quiet', category: 'calm', title: 'Quiet Sit', emoji: '🤍', difficulty: 1, minutes: 5, kind: 'steps',
+    blurb: 'Almost no words. Just you, a timer, and your breath.',
+    helps: ['calm', 'overwhelmed', 'tired', 'anxious', 'frustrated'], gives: ['calmer', 'relaxed', 'focused', 'reset'], style: 'quiet',
+    reason: 'Sometimes the kindest thing is no instructions at all.',
+    steps: [
+      { text: 'Settle in.', seconds: 20, pose: 'sit', anim: 'breathe' },
+      { text: 'Breathe.', seconds: 100, pose: 'sit', anim: 'breathe' },
+      { text: '…', seconds: 100, pose: 'sit', anim: 'breathe' },
+      { text: 'Still here.', seconds: 60, pose: 'sit', anim: 'breathe' },
+      { text: 'Come back slowly.', seconds: 20, pose: 'sit', anim: 'breathe' },
+    ],
+  },
+  {
+    id: 'mindful1', category: 'calm', title: 'Mindful Breathing', emoji: '🫧', difficulty: 1, minutes: 1, kind: 'steps',
+    blurb: 'Just… being here, one breath at a time.',
+    helps: ['calm', 'overwhelmed'], gives: ['calmer', 'focused'], style: 'guided',
+    reason: 'Gently noticing your breath is the simplest way back to the present.',
     steps: [
       { text: 'Get comfy. Let your shoulders drop.', seconds: 12, pose: 'sit', anim: 'breathe' },
       { text: 'Notice the air moving in and out of your nose.', seconds: 16, pose: 'sit', anim: 'breathe' },
@@ -183,6 +246,8 @@ export const ACTIVITIES: Activity[] = [
   {
     id: 'ground', category: 'calm', title: '5-4-3-2-1 Grounding', emoji: '🖐️', difficulty: 1, minutes: 3, kind: 'steps',
     blurb: 'A senses game that pulls you out of spiralling thoughts.',
+    helps: ['anxious', 'frustrated', 'overwhelmed'], gives: ['calmer', 'reset'], style: 'guided',
+    reason: 'Naming what you can see and hear pulls you out of your head and into the room.',
     steps: [
       { text: 'Look around. Name 5 things you can SEE.', seconds: 40, pose: 'sit', anim: 'breathe' },
       { text: 'Notice 4 things you can FEEL — your feet, your clothes…', seconds: 40, pose: 'sit', anim: 'breathe' },
@@ -196,10 +261,14 @@ export const ACTIVITIES: Activity[] = [
     id: '478', category: 'calm', title: '4-7-8 Breath', emoji: '🌬️', difficulty: 2, minutes: 3, durations: [2, 3, 5], kind: 'breath',
     blurb: 'A long, slow exhale that tells your body it\'s safe.',
     breath: { inhale: 4, hold: 7, exhale: 8, hold2: 0 },
+    helps: ['anxious', 'frustrated'], gives: ['calmer', 'relaxed'], style: 'either',
+    reason: 'A long exhale switches on your body\'s rest-and-digest mode.',
   },
   {
     id: 'bodyscan', category: 'calm', title: 'Body Scan', emoji: '✨', difficulty: 2, minutes: 5, durations: [3, 5, 8], kind: 'steps',
     blurb: 'Travel from toes to head, softening as you go.',
+    helps: ['tired', 'overwhelmed', 'calm'], gives: ['relaxed'], style: 'guided',
+    reason: 'Moving attention through the body releases tension you didn\'t know you were holding.',
     steps: [
       { text: 'Close your eyes. Take three slow breaths.', seconds: 30, pose: 'sit', anim: 'breathe' },
       { text: 'Bring attention to your feet and toes. Let them soften.', seconds: 35, pose: 'sit', anim: 'breathe' },
@@ -214,6 +283,8 @@ export const ACTIVITIES: Activity[] = [
   {
     id: 'kindness', category: 'calm', title: 'Loving Kindness', emoji: '💗', difficulty: 2, minutes: 4, kind: 'steps',
     blurb: 'Send good vibes to yourself, then the world.',
+    helps: ['frustrated', 'calm'], gives: ['reset', 'relaxed'], style: 'guided',
+    reason: 'Wishing others well softens resentment and resets your mood.',
     steps: [
       { text: 'Hand on heart. Breathe in slowly.', seconds: 30, pose: 'sit', anim: 'breathe' },
       { text: 'Silently say: "May I be happy. May I be at ease."', seconds: 45, pose: 'sit', anim: 'breathe' },
@@ -226,6 +297,8 @@ export const ACTIVITIES: Activity[] = [
   {
     id: 'focus', category: 'calm', title: 'Focus Flame', emoji: '🕯️', difficulty: 3, minutes: 6, durations: [4, 6, 10], kind: 'steps',
     blurb: 'Count breaths to ten without losing count. Harder than it sounds.',
+    helps: ['calm', 'tired'], gives: ['focused'], style: 'guided',
+    reason: 'Counting breaths trains the exact muscle you need for deep focus.',
     steps: [
       { text: 'Sit upright. Soft gaze at a single point.', seconds: 40, pose: 'sit', anim: 'still' },
       { text: 'Count each exhale: one… two… up to ten.', seconds: 60, pose: 'sit', anim: 'breathe' },
@@ -270,6 +343,59 @@ export const ACTIVITIES: Activity[] = [
     id: 'sleepy478', category: 'unwind', title: 'Sleepy 4-7-8', emoji: '😴', difficulty: 1, minutes: 4, kind: 'breath',
     blurb: 'The breathing pattern made for falling asleep.',
     breath: { inhale: 4, hold: 7, exhale: 8, hold2: 0 },
+  },
+  {
+    id: 'longexhale', category: 'unwind', title: 'Long Exhale Breathing', emoji: '🌬️', difficulty: 1, minutes: 2, kind: 'breath',
+    blurb: 'In for 4, out for 6. Nothing to hold.',
+    breath: { inhale: 4, hold: 0, exhale: 6, hold2: 0 },
+  },
+  {
+    id: 'dnd', category: 'unwind', title: 'Do Not Disturb', emoji: '📵', difficulty: 1, minutes: 1, kind: 'steps',
+    blurb: 'Quiet the phone before anything else.',
+    steps: [
+      { text: 'Switch your phone to Do Not Disturb.', seconds: 20, pose: 'sit', anim: 'breathe' },
+      { text: 'Turn the brightness all the way down.', seconds: 20, pose: 'sit', anim: 'breathe' },
+      { text: 'Good. Everything else can wait until morning.', seconds: 20, pose: 'sit', anim: 'breathe' },
+    ],
+  },
+  {
+    id: 'phonefree', category: 'unwind', title: 'Phone-free Moment', emoji: '🌘', difficulty: 1, minutes: 1, kind: 'steps',
+    blurb: 'Loosen the grip of the screen.',
+    steps: [
+      { text: 'Turn on Do Not Disturb. When this ends, the phone goes face-down.', seconds: 20, pose: 'sit', anim: 'breathe' },
+      { text: 'Notice any urge to check one more thing. Let it pass like a wave.', seconds: 20, pose: 'sit', anim: 'breathe' },
+      { text: 'Nothing out there needs you tonight.', seconds: 20, pose: 'sit', anim: 'breathe' },
+    ],
+  },
+  {
+    id: 'bedstretch', category: 'unwind', title: 'Gentle Stretch', emoji: '🛏️', difficulty: 1, minutes: 2, kind: 'steps',
+    blurb: 'Slow stretches you can do on the bed.',
+    steps: [
+      { text: 'Sit on the bed. Roll your neck slowly, side to side.', seconds: 30, pose: 'sit', anim: 'sway' },
+      { text: 'Reach your arms up… then fold forward over your legs.', seconds: 30, pose: 'reach', anim: 'breathe' },
+      { text: 'Lie back and hug your knees to your chest.', seconds: 30, pose: 'sleep', anim: 'breathe' },
+      { text: 'Let your knees fall to one side… then the other.', seconds: 30, pose: 'sleep', anim: 'sway' },
+    ],
+  },
+  {
+    id: 'unload', category: 'unwind', title: 'Mental Unload', emoji: '🍃', difficulty: 1, minutes: 2, kind: 'steps',
+    blurb: 'Set down the thoughts that keep circling.',
+    steps: [
+      { text: 'What\'s still buzzing in your head? Just notice it.', seconds: 30, pose: 'sit', anim: 'breathe' },
+      { text: 'Picture each thought as a leaf landing on a slow stream.', seconds: 30, pose: 'sit', anim: 'breathe' },
+      { text: 'Watch it float away. Here comes another. Let that one go too.', seconds: 30, pose: 'sit', anim: 'breathe' },
+      { text: 'Anything important will still be there tomorrow.', seconds: 30, pose: 'sit', anim: 'breathe' },
+    ],
+  },
+  {
+    id: 'reflect', category: 'unwind', title: 'Guided Reflection', emoji: '🕯️', difficulty: 1, minutes: 3, kind: 'steps',
+    blurb: 'A few soft questions to close the day.',
+    steps: [
+      { text: 'Think of one good moment from today, however small.', seconds: 40, pose: 'sleep', anim: 'breathe' },
+      { text: 'What is one thing you can let go of until tomorrow?', seconds: 40, pose: 'sleep', anim: 'breathe' },
+      { text: 'Who or what are you grateful for tonight?', seconds: 40, pose: 'sleep', anim: 'breathe' },
+      { text: 'Tell yourself: today was enough. I did enough.', seconds: 40, pose: 'sleep', anim: 'breathe' },
+    ],
   },
 ]
 

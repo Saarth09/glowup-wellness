@@ -900,25 +900,270 @@ button.pill:active {
   font-weight: 600;
 }
 
-.moods {
+/* ---------------------------- quiz + plans ---------------------------- */
+
+.quiz-progress {
+  flex: 1;
+  height: 8px;
+  margin: 0 14px;
+  border-radius: 99px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.quiz-progress i {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.25s ease;
+}
+.quiz-count {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+  min-width: 32px;
+  text-align: right;
+}
+.quiz-q {
+  margin: 6px 0 22px;
+  animation: rise 0.25s ease;
+}
+.opt-pill {
+  min-height: 68px;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.opt-pill:active {
+  transform: scale(0.98);
+}
+.opt-pill.chosen {
+  box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--text);
+}
+.opt-pill.last {
+  box-shadow: inset 0 0 0 2px rgba(12, 12, 14, 0.35);
+}
+.opt-pill .pill-name {
+  font-size: 22px;
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.ladder {
   display: flex;
-  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 6px;
+  margin: 18px 0 14px;
+}
+.rung {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  text-align: center;
+}
+.rung i {
+  display: block;
+  border-radius: 14px;
+  background: var(--surface-2);
+}
+.rung.on i {
+  background: var(--lime);
+}
+.rung.open i {
+  background: repeating-linear-gradient(-45deg, var(--surface-2) 0 6px, var(--surface-3) 6px 12px);
+}
+.rung small {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.rung.on small {
+  color: var(--text);
+}
+.reasons {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.reasons li {
+  font-size: 14px;
+  color: var(--muted);
+  padding-left: 18px;
+  position: relative;
+}
+.reasons li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 7px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--lime);
+}
+.adjust {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: var(--surface);
+  border-radius: 999px;
+  padding: 6px;
+}
+.adjust span {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.adjust .chip {
+  color: var(--text);
+  cursor: pointer;
+}
+.adjust .chip:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.plan-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.plan-steps li {
+  counter-increment: step;
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  background: var(--surface);
+  border-radius: 18px;
+  padding: 12px 16px;
+  font-size: 15px;
+}
+.plan-steps li::before {
+  content: counter(step);
+  font-weight: 800;
+  color: var(--lime);
+  min-width: 16px;
+}
+.plan-steps li.more {
+  color: var(--muted);
+  background: none;
+  padding-top: 2px;
+}
+.plan-steps li.more::before {
+  content: '';
+}
+.plan-cta {
+  margin-top: 20px;
+}
+.why-card {
+  background: var(--surface);
+  border-radius: 28px;
+  padding: 18px 20px;
+  margin-bottom: 4px;
+}
+.why-card .eyebrow {
+  color: var(--violet);
+}
+.why-card p {
+  margin: 6px 0 12px;
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.unwind-len {
+  align-self: flex-start;
+  margin: 2px 0 12px;
+}
+.unwind-len button.active {
+  background: var(--lavender);
+}
+.intent-list {
+  display: flex;
+  flex-direction: column;
   gap: 8px;
 }
-.mood {
-  border: 2px solid var(--mc);
-  background: transparent;
-  color: var(--text);
+.intent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: none;
   border-radius: 999px;
-  padding: 10px 18px;
-  font-size: 15px;
+  padding: 18px 22px;
+  background: var(--night-2, #1b1838);
+  color: #e6e2ff;
+  font-size: 18px;
   font-weight: 600;
-  transition: background 0.15s, color 0.15s;
+  letter-spacing: -0.02em;
+  text-align: left;
+  transition: background 0.2s;
 }
-.mood:hover,
-.mood:active {
-  background: var(--mc);
-  color: var(--ink);
+.intent:hover,
+.intent:active {
+  background: var(--night-3, #2a2650);
+}
+.sequence {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.sequence li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 9px 0 9px 22px;
+  position: relative;
+  border-bottom: 1px solid rgba(12, 12, 14, 0.12);
+}
+.sequence li:last-child {
+  border-bottom: none;
+}
+.sequence li::before {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 15px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ink);
+  opacity: 0.6;
+}
+.sequence li span {
+  font-size: 16px;
+  font-weight: 600;
+  opacity: 1;
+}
+.sequence li small {
+  font-size: 13px;
+  opacity: 0.6;
+}
+.part-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+.part-dots i {
+  width: 22px;
+  height: 5px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.15);
+}
+.part-dots i.on {
+  background: var(--c);
 }
 
 .reward {

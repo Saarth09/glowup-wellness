@@ -8,6 +8,7 @@ import { sfx, startAmbient } from '../lib/sound'
 interface Props {
   activity: Activity
   minutes: number
+  part?: { n: number; of: number; next?: string }
   avatar: AvatarConfig
   demoSpeed: boolean
   soundOn: boolean
@@ -44,7 +45,7 @@ const fmt = (s: number) => {
   return `${Math.floor(r / 60)}:${String(r % 60).padStart(2, '0')}`
 }
 
-export function Player({ activity, minutes, avatar, demoSpeed, soundOn, onToggleSpeed, onExit, onComplete }: Props) {
+export function Player({ activity, minutes, part, avatar, demoSpeed, soundOn, onToggleSpeed, onExit, onComplete }: Props) {
   const total = activity.kind === 'journal' ? Infinity : minutes * 60
   const [paused, setPaused] = useState(false)
   const [confirmQuit, setConfirmQuit] = useState(false)
@@ -83,7 +84,7 @@ export function Player({ activity, minutes, avatar, demoSpeed, soundOn, onToggle
     }
   }, [stepIdx, activity.kind, dark])
 
-  const quit = () => (elapsed > 5 || activity.kind === 'journal' ? setConfirmQuit(true) : onExit())
+  const quit = () => (elapsed > 5 || activity.kind === 'journal' || (part && part.n > 1) ? setConfirmQuit(true) : onExit())
   const progress = activity.kind === 'journal' ? 0 : elapsed / total
 
   return (
@@ -103,8 +104,15 @@ export function Player({ activity, minutes, avatar, demoSpeed, soundOn, onToggle
       </header>
 
       <div className="player-title">
-        <small className="eyebrow">{info.name}</small>
+        <small className="eyebrow">{part ? `${info.name} · part ${part.n} of ${part.of}` : info.name}</small>
         {activity.title}
+        {part && (
+          <div className="part-dots">
+            {Array.from({ length: part.of }, (_, k) => (
+              <i key={k} className={k < part.n ? 'on' : ''} />
+            ))}
+          </div>
+        )}
       </div>
 
       {activity.kind === 'steps' && step && (
@@ -119,7 +127,9 @@ export function Player({ activity, minutes, avatar, demoSpeed, soundOn, onToggle
 
       {activity.kind !== 'journal' && (
         <footer className="player-footer">
-          <div className="time-left">{fmt(total - elapsed)} left</div>
+          <div className="time-left">
+            {fmt(total - elapsed)} left{part?.next ? ` · then ${part.next}` : ''}
+          </div>
           <div className="player-controls">
             <Button variant="white" onClick={() => setPaused((p) => !p)}>
               {paused ? 'Resume' : 'Pause'}

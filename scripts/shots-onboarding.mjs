@@ -34,11 +34,14 @@ await page.screenshot({ path: 'screenshots/04b-home-full.png', fullPage: true })
 // Move path
 await page.locator('.cat-pill').nth(0).click()
 await page.waitForTimeout(400)
-await page.screenshot({ path: 'screenshots/05-move.png', fullPage: true })
-await page.locator('.act-pill').nth(2).click()
-await page.waitForTimeout(500)
-await shot('06-sheet')
-await page.locator('.act-sheet .btn').click()
+await shot('05-move')
+for (const a of ['Comfy clothes', 'Home', 'Nope, just me', '2 minutes', 'Okay', 'A little room']) {
+  await page.getByRole('button', { name: a }).first().click()
+  await page.waitForTimeout(250)
+}
+await page.waitForTimeout(300)
+await shot('06-plan')
+await page.locator('.plan-cta .btn').click()
 await page.waitForTimeout(1200)
 await shot('07-player')
 // speed up & finish

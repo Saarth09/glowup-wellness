@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { BodyToggle } from '../components/Customizer'
 import { Button, Pip } from '../components/ui'
-import { COMPLETION_BONUS } from '../data/activities'
+import { COMPLETION_BONUS, INTENSITY_MULT, MEDITATE_XP_PER_MIN, UNWIND_BONUS_CAP, UNWIND_NIGHT_BONUS, UNWIND_XP_PER_MIN } from '../data/activities'
 import { withBody } from '../data/items'
 import { levelStart } from '../lib/game'
 import type { Game } from '../lib/store'
@@ -59,10 +59,17 @@ export function Me({ game }: { game: Game }) {
 
       <h3 className="section-title">How XP works</h3>
       <section className="card howto">
+        <p>Each part of the app rewards something different. Everything finishes with +{COMPLETION_BONUS} XP.</p>
         <p>
-          <b>XP = minutes × 8 × difficulty + {COMPLETION_BONUS} for finishing.</b> Easy ×1, Medium ×1.5, Hard ×2.2.
+          <b>Move rewards effort.</b> Minutes × 8 × intensity. The intensity ladder goes stretching ×1, mobility ×{INTENSITY_MULT[2]}, squats ×{INTENSITY_MULT[3]}, lunges ×{INTENSITY_MULT[4]}, jumping ×{INTENSITY_MULT[5]}.
         </p>
-        <p>Any activity keeps your daily streak alive. Unwind activities also build your wind-down streak.</p>
+        <p>
+          <b>Meditate rewards time.</b> {MEDITATE_XP_PER_MIN} XP per minute, so 15 minutes beats 3, but 3 still counts.
+        </p>
+        <p>
+          <b>Wind down rewards consistency.</b> {UNWIND_XP_PER_MIN} XP per minute plus +{UNWIND_NIGHT_BONUS} for every night in a row (up to {UNWIND_BONUS_CAP}).
+        </p>
+        <p>Any activity keeps your daily streak alive. Winding down also builds your wind-down streak.</p>
         <p>
           Levels: L2 at {levelStart(2)} XP, L3 at {levelStart(3)}, L5 at {levelStart(5)}, L10 at {levelStart(10).toLocaleString()}.
         </p>

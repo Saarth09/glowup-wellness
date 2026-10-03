@@ -123,11 +123,11 @@ export function Onboarding({ game }: { game: Game }) {
           <h2 className="ob-title">How it works, {name.trim() || 'friend'}</h2>
           <div className="pill-list">
             {[
-              ['Do a Move, Calm or Unwind activity', '#D4F06B'],
-              ['Earn XP. Harder and longer = more', '#EDEB5E'],
-              ['Show up daily to keep your streak', '#F2894A'],
-              ['Unlock clothes, shoes and worlds', '#F2A3CB'],
-              ['Glow up your character', '#A9ADFF'],
+              ['Pick Move, Meditate or Wind down', '#D4F06B'],
+              ['Answer a few quick questions', '#A9C9F2'],
+              ['Get a session that fits right now', '#EDEB5E'],
+              ['Earn XP for effort, time and streaks', '#F2894A'],
+              ['Unlock outfits for your character', '#F2A3CB'],
             ].map(([t, c], i) => (
               <div key={i} className="pill loop-pill" style={{ background: c, animationDelay: `${i * 0.08}s` }}>
                 <span className="pill-name">{t}</span>

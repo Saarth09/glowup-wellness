@@ -1,18 +1,15 @@
 import { Avatar } from '../components/Avatar'
 import { Bar, Flame, Gem, Icon, Moon, PALETTE, WeekStrip } from '../components/ui'
-import { ACTIVITY_BY_ID, CATEGORY_INFO, type Activity } from '../data/activities'
+import { CATEGORY_INFO } from '../data/activities'
 import { describeUnlock, type Category } from '../data/items'
 import { DAILY_GOAL, STREAK_MILESTONES, nextReward } from '../lib/game'
 import type { Game } from '../lib/store'
 
-const MOODS: { label: string; activity: string }[] = [
-  { label: 'Stiff', activity: 'desk' },
-  { label: 'Stressed', activity: 'box' },
-  { label: 'Sluggish', activity: 'wakeup' },
-  { label: 'Restless', activity: 'hiit' },
-  { label: 'Scattered', activity: 'ground' },
-  { label: "Can't sleep", activity: 'sleepy478' },
-]
+const REWARD_STYLE: Record<Category, string> = {
+  move: 'XP for effort',
+  calm: 'XP for time',
+  unwind: 'XP for consistency',
+}
 
 export function TopBar({ game }: { game: Game }) {
   const { stats } = game
@@ -45,11 +42,10 @@ function greeting(hour: number) {
 interface Props {
   game: Game
   onCategory: (c: Category) => void
-  onActivity: (a: Activity) => void
   onCloset: () => void
 }
 
-export function Home({ game, onCategory, onActivity, onCloset }: Props) {
+export function Home({ game, onCategory, onCloset }: Props) {
   const { state, stats } = game
   const now = new Date()
   const hour = now.getHours()
@@ -112,22 +108,15 @@ export function Home({ game, onCategory, onActivity, onCloset }: Props) {
             <button key={c} className={`pill cat-pill ${xp ? 'done' : ''} ${c === 'unwind' && night && !xp ? 'glow' : ''}`} style={{ background: info.color }} onClick={() => onCategory(c)}>
               <span className="pill-text">
                 <span className="pill-name">{info.name}</span>
-                <small>{c === 'unwind' && night && !xp ? "Tonight's pick is ready" : info.tagline}</small>
+                <small>
+                  {c === 'unwind' && night && !xp ? 'Time to power down' : info.tagline} · {REWARD_STYLE[c]}
+                </small>
               </span>
               <span className="pill-num">{xp ? `+${xp}` : <Icon name="arrow" />}</span>
             </button>
           )
         })}
       </div>
-
-      <h3 className="section-title">How do you feel?</h3>
-      <section className="moods">
-        {MOODS.map((m, i) => (
-          <button key={m.label} className="mood" style={{ ['--mc' as string]: PALETTE[(i * 3) % PALETTE.length] }} onClick={() => onActivity(ACTIVITY_BY_ID[m.activity])}>
-            {m.label}
-          </button>
-        ))}
-      </section>
 
       {reward && reward.item.unlock && (
         <>

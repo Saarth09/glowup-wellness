@@ -1,4 +1,5 @@
 import { ITEMS, itemsFor, type AvatarConfig, type Body, type Category, type Item, type Unlock } from '../data/items'
+import type { MeditateAnswers, MoveAnswers, UnwindLength } from '../data/recommend'
 
 export interface Entry {
   id: string
@@ -8,6 +9,7 @@ export interface Entry {
   minutes: number
   day: string
   ts: number
+  title?: string
 }
 
 export interface GameState {
@@ -20,6 +22,9 @@ export interface GameState {
   demoSpeed: boolean
   sound: boolean
   unwindSwap: string | null
+  lastMove?: MoveAnswers
+  lastMeditate?: MeditateAnswers
+  lastUnwindLength?: UnwindLength
 }
 
 export const DAILY_GOAL = 50

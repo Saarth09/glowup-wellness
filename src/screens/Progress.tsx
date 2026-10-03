@@ -99,7 +99,7 @@ export function Progress({ game }: { game: Game }) {
                 <div key={e.id} className="recent-row">
                   <span className="recent-dot" style={{ background: CATEGORY_INFO[e.cat].color }} />
                   <span className="recent-title">
-                    {a?.title ?? 'Activity'}
+                    {e.title ?? a?.title ?? 'Activity'}
                     <small>
                       {e.day === stats.today ? 'Today' : e.day} · {e.minutes} min
                     </small>

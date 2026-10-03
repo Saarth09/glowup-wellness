@@ -59,24 +59,33 @@ await scroll(420)
 await scroll(420)
 await scroll(-900, 700)
 
-// Feeling stressed -> box breathing at 10x
-await tap(page.locator('.mood').nth(1), 1400)
-await tap(page.locator('.act-sheet .dur').first(), 600)
-await tap(page.locator('.act-sheet .btn'), 1500)
+const answer = (label, pause = 650) => tap(page.getByRole('button', { name: label }), pause)
+
+// Move: at the office in workwear -> desk-friendly; then at home with energy -> cardio
+await tap(page.locator('.cat-pill').nth(0), 1200)
+for (const a of ['Workwear', 'Office', 'Yes, people around', '5 minutes', 'High', 'Just my spot']) await answer(a)
+await wait(1200)
+await scroll(400, 1200)
+await scroll(-600, 500)
+await answer('Change answers', 900)
+for (const a of ['Comfy clothes', 'Home', 'Nope, just me', '2 minutes', 'High', 'Plenty']) await answer(a)
+await wait(1200)
+await answer('Easier', 900)
+await answer('Harder', 900)
+await scroll(400, 900)
+await tap(page.locator('.plan-cta .btn'), 1500)
 await tap(page.locator('.speed'), 0)
-await wait(6500)
+await page.locator('.rewards').waitFor({ timeout: 60000 })
 await finishRewards()
 
-// Move path -> squat challenge
+// Meditate: frustrated -> calmer
 await wait(800)
-await tap(page.locator('.cat-pill').nth(0), 1200)
-await scroll(300)
-await tap(page.locator('.act-pill').nth(3), 1400)
-await tap(page.locator('.act-sheet .btn'), 1500)
-await wait(12500)
+await tap(page.locator('.cat-pill').nth(1), 1200)
+for (const a of ['Frustrated', 'Calmer', '3 minutes', 'Guided']) await answer(a)
+await wait(2200)
+await tap(page.locator('.plan-cta .btn'), 1500)
+await page.locator('.rewards').waitFor({ timeout: 60000 })
 await finishRewards()
-await wait(800)
-await tap(page.locator('.page-head .icon-btn'), 800)
 
 // Demo tools: fast-forward a week of history + XP
 await tap(page.locator('.nav-btn').nth(3), 900)
@@ -107,21 +116,13 @@ await scroll(450, 1000)
 await scroll(450, 1000)
 await scroll(450, 1200)
 
-// Unwind: one pick, then goodnight
+// Wind down: one choice -> a calming sequence -> goodnight
 await tap(page.locator('.nav-btn').nth(0), 900)
-await tap(page.locator('.cat-pill').nth(2), 2500)
-await scroll(300, 1200)
-await tap(page.locator('.unwind .btn'), 1500)
-if (await page.locator('.journal-view').count()) {
-  const boxes = page.locator('textarea')
-  await boxes.nth(0).pressSequentially('Sunset walk', { delay: 60 })
-  await boxes.nth(1).pressSequentially('Finished my demo', { delay: 60 })
-  await boxes.nth(2).pressSequentially('Pancakes tomorrow', { delay: 60 })
-  await tap(text('Save & finish'), 500)
-} else {
-  if (!(await page.locator('.speed.on').count())) await tap(page.locator('.speed'), 0)
-  await page.locator('.rewards').waitFor({ timeout: 60000 })
-}
+await tap(page.locator('.cat-pill').nth(2), 2000)
+await scroll(300, 1000)
+await answer('Prepare for sleep', 2200)
+await answer('Begin wind-down', 1500)
+await page.locator('.rewards').waitFor({ timeout: 90000 })
 await finishRewards()
 await wait(3000)
 
